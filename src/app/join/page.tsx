@@ -11,7 +11,7 @@ export const metadata: Metadata = {
 
 export default function JoinPage() {
   return (
-    <div className="relative flex min-h-screen flex-col overflow-hidden bg-cream">
+    <div className="relative flex min-h-screen flex-col bg-cream">
       <Blobs />
       <header className="relative z-10 mx-auto flex w-full max-w-6xl items-center justify-between px-6 py-5">
         <Link href="/" className="flex items-center gap-2 font-heading text-lg font-semibold">

@@ -10,7 +10,7 @@ import MobileCta from "@/components/MobileCta";
 
 export default function Home() {
   return (
-    <div className="relative flex flex-1 flex-col overflow-hidden pb-20 sm:pb-0">
+    <div className="relative flex flex-1 flex-col pb-20 sm:pb-0">
       <Intro />
       <Blobs />
       <Nav />

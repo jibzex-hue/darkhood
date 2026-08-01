@@ -22,6 +22,15 @@ export default function Nav() {
     { href: "/join", label: "Allowlist" },
   ];
 
+  function handleAnchorClick(e: React.MouseEvent, href: string) {
+    if (!href.startsWith("#")) return;
+    const el = document.querySelector(href);
+    if (!el) return;
+    e.preventDefault();
+    el.scrollIntoView({ behavior: "smooth", block: "start" });
+    window.history.pushState(null, "", href);
+  }
+
   return (
     <header className="sticky top-0 z-50 border-b-2 border-ink/10 bg-cream/80 backdrop-blur-md">
       <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-3">
@@ -38,7 +47,12 @@ export default function Nav() {
 
         <nav className="hidden items-center gap-8 text-sm font-semibold sm:flex">
           {links.map((l) => (
-            <Link key={l.label} href={l.href} className="transition hover:text-coral-dark">
+            <Link
+              key={l.label}
+              href={l.href}
+              onClick={(e) => handleAnchorClick(e, l.href)}
+              className="transition hover:text-coral-dark"
+            >
               {l.label}
             </Link>
           ))}
@@ -90,7 +104,10 @@ export default function Nav() {
                 <Link
                   key={l.label}
                   href={l.href}
-                  onClick={() => setOpen(false)}
+                  onClick={(e) => {
+                    handleAnchorClick(e, l.href);
+                    setOpen(false);
+                  }}
                   className="rounded-xl px-3 py-2.5 text-sm font-semibold transition hover:bg-white"
                 >
                   {l.label}

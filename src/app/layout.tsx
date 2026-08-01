@@ -30,7 +30,7 @@ export default function RootLayout({
       lang="en"
       className={`${fredoka.variable} ${nunito.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col bg-cream text-ink overflow-x-hidden">
+      <body className="min-h-full flex flex-col bg-cream text-ink">
         {children}
       </body>
     </html>

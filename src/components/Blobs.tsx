@@ -1,6 +1,6 @@
 export default function Blobs() {
   return (
-    <>
+    <div className="pointer-events-none absolute inset-0 -z-10 overflow-hidden">
       <div
         className="blob"
         style={{
@@ -34,6 +34,6 @@ export default function Blobs() {
           animationDelay: "-9s",
         }}
       />
-    </>
+    </div>
   );
 }
