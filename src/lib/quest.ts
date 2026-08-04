@@ -46,3 +46,41 @@ export function saveEntry(entry: AllowlistEntry) {
   window.localStorage.setItem(STORAGE_KEY, JSON.stringify(entries));
   return entries.length;
 }
+
+const ALLOWLIST_ENDPOINT =
+  "https://script.google.com/macros/s/AKfycbyuyEosclLvnM3Enp-BiVGzCRetcFwjzHKUSGMagv5UhXtLpFREJySL8wnuY4Au_7K6/exec";
+
+export class AllowlistSubmitError extends Error {}
+
+// Body is sent as text/plain (not application/json) so the browser treats this
+// as a CORS-safelisted request — Apps Script's /exec endpoint has no doOptions
+// handler, so a JSON content-type would trigger a preflight it can't answer.
+export async function submitEntry(entry: {
+  wallet: string;
+  xUsername: string;
+  quoteLink: string;
+}) {
+  if (!ALLOWLIST_ENDPOINT) {
+    throw new AllowlistSubmitError("Allowlist endpoint isn't configured.");
+  }
+
+  const res = await fetch(ALLOWLIST_ENDPOINT, {
+    method: "POST",
+    headers: { "Content-Type": "text/plain;charset=utf-8" },
+    body: JSON.stringify({
+      username: entry.xUsername,
+      quoteLink: entry.quoteLink,
+      wallet: entry.wallet,
+    }),
+  });
+
+  // Apps Script's ContentService always responds HTTP 200, even for the
+  // error cases in doPost — the real result lives in the JSON body.
+  const data = await res.json().catch(() => null);
+
+  if (!res.ok || !data || data.error) {
+    throw new AllowlistSubmitError(data?.error || "Submission failed. Try again.");
+  }
+
+  return data as { ok: true; total: number };
+}

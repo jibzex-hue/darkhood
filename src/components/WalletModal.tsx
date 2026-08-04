@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { EVM_ADDRESS_RE, saveEntry, X_HANDLE } from "@/lib/quest";
+import { AllowlistSubmitError, EVM_ADDRESS_RE, saveEntry, submitEntry, X_HANDLE } from "@/lib/quest";
 import Stepper from "./Stepper";
 
 const CONFETTI = ["🐼", "🎋", "✨", "🍥", "🎉"];
@@ -19,6 +19,7 @@ export default function WalletModal({ open, onClose, xUsername, quoteLink, onSuc
   const [wallet, setWallet] = useState("");
   const [error, setError] = useState("");
   const [submitted, setSubmitted] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
 
   useEffect(() => {
     if (!open) {
@@ -26,6 +27,7 @@ export default function WalletModal({ open, onClose, xUsername, quoteLink, onSuc
         setWallet("");
         setError("");
         setSubmitted(false);
+        setSubmitting(false);
       }, 300);
       return () => clearTimeout(t);
     }
@@ -48,7 +50,7 @@ export default function WalletModal({ open, onClose, xUsername, quoteLink, onSuc
     };
   }, [open]);
 
-  function handleSubmit(e: React.FormEvent) {
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     const trimmed = wallet.trim();
     if (!trimmed) {
@@ -60,14 +62,26 @@ export default function WalletModal({ open, onClose, xUsername, quoteLink, onSuc
       return;
     }
     setError("");
-    saveEntry({
-      wallet: trimmed,
-      xUsername,
-      quoteLink,
-      savedAt: new Date().toISOString(),
-    });
-    setSubmitted(true);
-    onSuccess?.(trimmed);
+    setSubmitting(true);
+    try {
+      await submitEntry({ wallet: trimmed, xUsername, quoteLink });
+      saveEntry({
+        wallet: trimmed,
+        xUsername,
+        quoteLink,
+        savedAt: new Date().toISOString(),
+      });
+      setSubmitted(true);
+      onSuccess?.(trimmed);
+    } catch (err) {
+      setError(
+        err instanceof AllowlistSubmitError
+          ? err.message
+          : "Couldn't reach the server. Check your connection and try again."
+      );
+    } finally {
+      setSubmitting(false);
+    }
   }
 
   return (
@@ -166,9 +180,10 @@ export default function WalletModal({ open, onClose, xUsername, quoteLink, onSuc
                     </div>
                     <button
                       type="submit"
-                      className="w-full rounded-full bg-panda-red py-3.5 font-heading font-semibold text-cream transition hover:-translate-y-0.5 hover:shadow-[4px_4px_0_0_var(--color-ink)]"
+                      disabled={submitting}
+                      className="w-full rounded-full bg-panda-red py-3.5 font-heading font-semibold text-cream transition hover:-translate-y-0.5 hover:shadow-[4px_4px_0_0_var(--color-ink)] disabled:cursor-not-allowed disabled:opacity-60 disabled:hover:translate-y-0 disabled:hover:shadow-none"
                     >
-                      Secure My Spot
+                      {submitting ? "Locking it in…" : "Secure My Spot"}
                     </button>
                   </form>
                 </motion.div>
