@@ -1,8 +1,7 @@
 export const X_HANDLE = "pokupandas";
 export const QUOTE_TEXT = "bamboo yeah, climbed in";
 
-// Placeholder until the real pinned-post URL is published — swap the tweet id below.
-export const PINNED_POST_URL = `https://x.com/${X_HANDLE}`;
+export const PINNED_POST_URL = "https://x.com/pokupandas/status/2084625535657775230?s=20";
 
 export const FOLLOW_URL = `https://x.com/intent/follow?screen_name=${X_HANDLE}`;
 export const QUOTE_INTENT_URL = `https://x.com/intent/tweet?text=${encodeURIComponent(
